@@ -2,8 +2,11 @@ import { NextResponse } from 'next/server';
 import { encrypt } from '@/lib/encryption';
 
 /**
- * API Route that returns encrypted sensitive data
- * This simulates fetching data from a secure source and encrypting it before sending
+ * API endpoint that returns encrypted sensitive data.
+ * This simulates what would come from a database or secure service.
+ * The encryption key is stored server-side in environment variables.
+ * 
+ * @returns JSON response with encrypted payload
  */
 export async function GET() {
   const encryptionKey = process.env.ENCRYPTION_KEY;
@@ -15,7 +18,7 @@ export async function GET() {
     );
   }
 
-  // Simulated sensitive data that would come from a database or external service
+  // Sample sensitive data - in production this would come from a database
   const sensitiveData = {
     timestamp: new Date().toISOString(),
     records: [
@@ -31,7 +34,8 @@ export async function GET() {
   };
 
   try {
-    // Encrypt the sensitive data before sending
+    // Encrypt the data before sending to client
+    // Format: base64(iv:tag:encryptedData)
     const encryptedPayload = encrypt(JSON.stringify(sensitiveData), encryptionKey);
     
     return NextResponse.json({ encryptedData: encryptedPayload });
