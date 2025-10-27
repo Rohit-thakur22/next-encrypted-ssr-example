@@ -60,18 +60,26 @@ export default function RecordCard({ record, index }: RecordCardProps) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95 }}
+      initial={{ opacity: 0, y: 50, x: -100, scale: 0.8, rotate: -10 }}
+      animate={{ 
+        opacity: 1, 
+        y: 0, 
+        x: 0,
+        scale: 1,
+        rotate: 0,
+      }}
+      exit={{ opacity: 0, x: 100, scale: 0.95, rotate: 10 }}
       whileHover={{ 
         y: -8,
         scale: 1.02,
         transition: { duration: 0.2 }
       }}
       transition={{
-        duration: 0.4,
-        delay: index * 0.05,
-        ease: [0.16, 1, 0.3, 1],
+        type: "spring",
+        stiffness: 100,
+        damping: 15,
+        duration: 0.6,
+        delay: index * 0.08,
       }}
       className="group"
     >

@@ -1,5 +1,6 @@
 import { decrypt } from '@/lib/encryption';
 import ClientRecordsViewer from '@/components/ClientRecordsViewer';
+import TypingAnimation from '@/components/TypingAnimation';
 
 // Force dynamic rendering - cannot be statically generated due to server-side encryption
 export const dynamic = 'force-dynamic';
@@ -77,9 +78,10 @@ export default async function Home() {
         {/* Header Section */}
         <div className="mb-12 text-center">
           <div className="inline-block mb-6">
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-gray-200 to-gray-400">
-              Secure Records Viewer
-            </h1>
+            <TypingAnimation 
+              text="Secure Records Viewer"
+              className="text-5xl sm:text-6xl lg:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-gray-200 to-gray-400"
+            />
           </div>
           <p className="text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto">
             Server-side encrypted data • Built with Next.js & AES-256-GCM
