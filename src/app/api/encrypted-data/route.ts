@@ -1,13 +1,7 @@
 import { NextResponse } from 'next/server';
 import { encrypt } from '@/lib/encryption';
 
-/**
- * API endpoint that returns encrypted sensitive data.
- * This simulates what would come from a database or secure service.
- * The encryption key is stored server-side in environment variables.
- * 
- * @returns JSON response with encrypted payload
- */
+// API route that returns encrypted sensitive data
 export async function GET() {
   const encryptionKey = process.env.ENCRYPTION_KEY;
   

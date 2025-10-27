@@ -16,15 +16,11 @@ interface ClientRecordsViewerProps {
   initialRecords: RecordItem[];
 }
 
-/**
- * Client component that handles search, sort, and displays the record cards.
- * All interactivity happens client-side for responsive UX.
- */
+// Client component: handles search, sort, and displays cards
 export default function ClientRecordsViewer({ initialRecords }: ClientRecordsViewerProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'date' | 'type' | 'sensitivity'>('date');
 
-  // Filter and sort records based on user input
   const filteredAndSortedRecords = initialRecords
     .filter(record => {
       const query = searchQuery.toLowerCase();
@@ -49,7 +45,6 @@ export default function ClientRecordsViewer({ initialRecords }: ClientRecordsVie
 
   return (
     <div className="space-y-8">
-      {/* Search and sort control panel with glassmorphism effect */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -62,7 +57,6 @@ export default function ClientRecordsViewer({ initialRecords }: ClientRecordsVie
         }}
       >
         <div className="mb-6 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-          {/* Search Input */}
           <div className="flex-1">
             <label htmlFor="search" className="mb-3 block text-sm font-medium text-gray-300">
               Search Records
@@ -100,7 +94,6 @@ export default function ClientRecordsViewer({ initialRecords }: ClientRecordsVie
             </div>
           </div>
 
-          {/* Sort Dropdown */}
           <div className="md:w-56">
             <label htmlFor="sort" className="mb-3 block text-sm font-medium text-gray-300">
               Sort By
@@ -133,7 +126,6 @@ export default function ClientRecordsViewer({ initialRecords }: ClientRecordsVie
           </div>
         </div>
 
-        {/* Results Count with Animated Number */}
         <AnimatePresence mode="wait">
           <motion.div
             key={filteredAndSortedRecords.length}

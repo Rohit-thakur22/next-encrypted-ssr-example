@@ -18,13 +18,7 @@ interface DecryptedData {
   records: RecordItem[];
 }
 
-/**
- * Fetches encrypted data from the API route and decrypts it server-side.
- * This is critical for security - the client never sees encryption keys or plaintext data.
- * 
- * @returns Decrypted record data
- * @throws Error if encryption key is missing or decryption fails
- */
+// Fetches encrypted data from API route and decrypts it server-side
 async function getDecryptedData(): Promise<DecryptedData> {
   const encryptionKey = process.env.ENCRYPTION_KEY;
   
@@ -33,23 +27,26 @@ async function getDecryptedData(): Promise<DecryptedData> {
   }
 
   try {
-    // Call our internal API route that returns encrypted data
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+    // Get base URL - works in dev and on Vercel
+    const baseUrl = process.env.VERCEL_URL 
+      ? `https://${process.env.VERCEL_URL}`
+      : process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+    
+    // Fetch from internal API route (as per requirements)
     const response = await fetch(`${baseUrl}/api/encrypted-data`, {
-      cache: 'no-store', // Always fetch fresh data
+      cache: 'no-store',
       headers: {
         'Accept': 'application/json',
       },
     });
 
     if (!response.ok) {
-      throw new Error('Failed to fetch encrypted data from API');
+      throw new Error(`Failed to fetch encrypted data: ${response.status}`);
     }
 
     const { encryptedData } = await response.json();
     
-    // Decrypt the data SERVER-SIDE - this is the key security feature
-    // The browser never receives plaintext data or the encryption key
+    // Decrypt server-side (critical for security)
     const decryptedJson = decrypt(encryptedData, encryptionKey);
     
     return JSON.parse(decryptedJson) as DecryptedData;
@@ -59,28 +56,26 @@ async function getDecryptedData(): Promise<DecryptedData> {
   }
 }
 
-/**
- * Main page component - this is a SERVER COMPONENT
- * It fetches and decrypts data on the server before sending HTML to the client
- */
+// Server component: fetches and decrypts data before rendering
 export default async function Home() {
-  const initialData = await getDecryptedData();
+    const initialData = await getDecryptedData();
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-black via-gray-950 to-black">
-      {/* Animated background orbs for visual depth */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
         <div className="absolute top-60 -left-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000" />
       </div>
 
       <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-        {/* Header Section */}
         <div className="mb-12 text-center">
           <div className="inline-block mb-6">
             <TypingAnimation 
               text="Secure Records Viewer"
-              className="text-5xl sm:text-6xl lg:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-gray-200 to-gray-400"
+              className="text-5xl sm:text-6xl lg:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-500 via-pink-500 to-cyan-400 animate-gradient bg-[length:200%_auto]"
+              style={{
+                backgroundImage: 'linear-gradient(to right, #60a5fa, #a855f7, #ec4899, #22d3ee)',
+              }}
             />
           </div>
           <p className="text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto">
@@ -92,7 +87,6 @@ export default async function Home() {
           </div>
         </div>
 
-        {/* Main Content */}
         <div className="mx-auto max-w-7xl">
           <ClientRecordsViewer initialRecords={initialData.records} />
         </div>

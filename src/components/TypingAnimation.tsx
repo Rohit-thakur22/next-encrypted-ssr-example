@@ -6,12 +6,10 @@ import { motion } from 'framer-motion';
 interface TypingAnimationProps {
   text: string;
   className?: string;
+  style?: React.CSSProperties;
 }
 
-/**
- * Typing effect component that animates text character by character
- */
-export default function TypingAnimation({ text, className = '' }: TypingAnimationProps) {
+export default function TypingAnimation({ text, className = '', style }: TypingAnimationProps) {
   const [displayedText, setDisplayedText] = useState('');
   const [isComplete, setIsComplete] = useState(false);
 
@@ -36,6 +34,7 @@ export default function TypingAnimation({ text, className = '' }: TypingAnimatio
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
       className={className}
+      style={style}
     >
       {displayedText}
       {!isComplete && (

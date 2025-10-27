@@ -44,10 +44,7 @@ const typeIcons: Record<string, string> = {
   'Report': '📊',
 };
 
-/**
- * Individual record card component with glassmorphism design and smooth animations.
- * Includes hover effects, sensitivity coloring, and animated entrance.
- */
+// Record card with glassmorphism and animations
 export default function RecordCard({ record, index }: RecordCardProps) {
   const colors = sensitivityColors[record.sensitivity] || {
     bg: 'from-gray-500/10 to-gray-500/5',
@@ -91,13 +88,11 @@ export default function RecordCard({ record, index }: RecordCardProps) {
           background: `linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02))`,
         }}
       >
-        {/* Glow effect on hover */}
         <div className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
           <div className={`absolute -inset-1 bg-gradient-to-r ${colors.bg} blur-xl opacity-50`} />
         </div>
 
         <div className="relative z-10">
-          {/* Icon and sensitivity badge */}
           <div className="mb-4 flex items-start justify-between">
             <div className="flex items-center gap-2">
               <div 
@@ -118,12 +113,10 @@ export default function RecordCard({ record, index }: RecordCardProps) {
             </div>
           </div>
 
-          {/* Record title with hover color transition */}
           <h3 className="mb-3 text-xl font-bold text-white group-hover:text-blue-400 transition-colors">
             {record.title}
           </h3>
 
-          {/* Date display with calendar icon */}
           <div className="mb-6 flex items-center gap-2 text-sm text-gray-400">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -137,7 +130,6 @@ export default function RecordCard({ record, index }: RecordCardProps) {
             </span>
           </div>
 
-          {/* Primary action button with gradient and hover glow */}
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -162,7 +154,6 @@ export default function RecordCard({ record, index }: RecordCardProps) {
           </motion.button>
         </div>
 
-        {/* Decorative corner accent */}
         <div className="absolute top-0 right-0 h-24 w-24 overflow-hidden">
           <div className={`absolute -right-12 -top-12 h-24 w-24 rounded-full bg-gradient-to-br ${colors.bg} opacity-30 blur-2xl`} />
         </div>
