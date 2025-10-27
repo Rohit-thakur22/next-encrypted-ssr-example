@@ -19,6 +19,7 @@ interface DecryptedData {
 }
 
 // Fetches encrypted data from API route and decrypts it server-side
+// Simulates the exact flow: API encrypts → Server decrypts → Render
 async function getDecryptedData(): Promise<DecryptedData> {
   const encryptionKey = process.env.ENCRYPTION_KEY;
   
@@ -27,10 +28,16 @@ async function getDecryptedData(): Promise<DecryptedData> {
   }
 
   try {
-    // Get base URL - works in dev and on Vercel
-    const baseUrl = process.env.VERCEL_URL 
-      ? `https://${process.env.VERCEL_URL}`
-      : process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+    // Build the API URL - use environment variable or construct from request headers
+    let baseUrl = 'http://localhost:3000';
+    
+    if (process.env.VERCEL_URL) {
+      baseUrl = `https://${process.env.VERCEL_URL}`;
+    } else if (process.env.NEXT_PUBLIC_BASE_URL) {
+      baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+    }
+    
+    console.log('Fetching from:', `${baseUrl}/api/encrypted-data`);
     
     // Fetch from internal API route (as per requirements)
     const response = await fetch(`${baseUrl}/api/encrypted-data`, {
@@ -40,11 +47,20 @@ async function getDecryptedData(): Promise<DecryptedData> {
       },
     });
 
+    console.log('API Response status:', response.status);
+
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error('API Error:', response.status, errorText);
       throw new Error(`Failed to fetch encrypted data: ${response.status}`);
     }
 
-    const { encryptedData } = await response.json();
+    const data = await response.json();
+    const { encryptedData } = data;
+    
+    if (!encryptedData) {
+      throw new Error('No encrypted data received from API');
+    }
     
     // Decrypt server-side (critical for security)
     const decryptedJson = decrypt(encryptedData, encryptionKey);
