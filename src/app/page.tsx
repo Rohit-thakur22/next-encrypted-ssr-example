@@ -1,9 +1,9 @@
-import { decrypt } from '@/lib/encryption';
-import ClientRecordsViewer from '@/components/ClientRecordsViewer';
-import TypingAnimation from '@/components/TypingAnimation';
+import { decrypt } from "@/lib/encryption";
+import ClientRecordsViewer from "@/components/ClientRecordsViewer";
+import TypingAnimation from "@/components/TypingAnimation";
 
 // Force dynamic rendering - cannot be statically generated due to server-side encryption
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 interface RecordItem {
   id: string;
@@ -22,59 +22,71 @@ interface DecryptedData {
 // Simulates the exact flow: API encrypts → Server decrypts → Render
 async function getDecryptedData(): Promise<DecryptedData> {
   const encryptionKey = process.env.ENCRYPTION_KEY;
-  
+
   if (!encryptionKey) {
-    throw new Error('ENCRYPTION_KEY environment variable is not set');
+    throw new Error("ENCRYPTION_KEY environment variable is not set");
   }
 
   try {
     // Build the API URL - use environment variable or construct from request headers
-    let baseUrl = 'http://localhost:3000';
-    
+    let baseUrl = "http://localhost:3000";
+
     if (process.env.VERCEL_URL) {
       baseUrl = `https://${process.env.VERCEL_URL}`;
     } else if (process.env.NEXT_PUBLIC_BASE_URL) {
       baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
     }
-    
-    console.log('Fetching from:', `${baseUrl}/api/encrypted-data`);
-    
-    // Fetch from internal API route (as per requirements)
-    const response = await fetch(`${baseUrl}/api/encrypted-data`, {
-      cache: 'no-store',
-      headers: {
-        'Accept': 'application/json',
-      },
-    });
 
-    console.log('API Response status:', response.status);
+    console.log("Fetching from:", `${baseUrl}/api/encrypted-data`);
+
+    // Fetch from internal API route (as per requirements)
+    // const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/encrypted-data`, {
+    //   cache: 'no-store',
+    //   headers: {
+    //     'Accept': 'application/json',
+    //   },
+    // });
+    const response = await fetch(
+      `${
+        process.env.NEXT_PUBLIC_BASE_URL
+          ? `${process.env.NEXT_PUBLIC_BASE_URL}/api/encrypted-data`
+          : "/api/encrypted-data"
+      }`,
+      {
+        cache: "no-store",
+        headers: {
+          Accept: "application/json",
+        },
+      }
+    );
+    console.log("API Response status:", response.status);
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('API Error:', response.status, errorText);
+      console.error("API Error:", response.status, errorText);
       throw new Error(`Failed to fetch encrypted data: ${response.status}`);
     }
 
     const data = await response.json();
     const { encryptedData } = data;
-    
+
     if (!encryptedData) {
-      throw new Error('No encrypted data received from API');
+      throw new Error("No encrypted data received from API");
     }
-    
+
     // Decrypt server-side (critical for security)
     const decryptedJson = decrypt(encryptedData, encryptionKey);
-    
+
     return JSON.parse(decryptedJson) as DecryptedData;
   } catch (error) {
-    console.error('Error fetching or decrypting data:', error);
+    console.error("Error fetching or decrypting data:", error);
     throw error;
   }
 }
 
 // Server component: fetches and decrypts data before rendering
 export default async function Home() {
-    const initialData = await getDecryptedData();
+  const initialData = await getDecryptedData();
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-black via-gray-950 to-black">
@@ -86,11 +98,12 @@ export default async function Home() {
       <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         <div className="mb-12 text-center">
           <div className="inline-block mb-6">
-            <TypingAnimation 
+            <TypingAnimation
               text="Secure Records Viewer"
               className="text-5xl sm:text-6xl lg:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-500 via-pink-500 to-cyan-400 animate-gradient bg-[length:200%_auto]"
               style={{
-                backgroundImage: 'linear-gradient(to right, #60a5fa, #a855f7, #ec4899, #22d3ee)',
+                backgroundImage:
+                  "linear-gradient(to right, #60a5fa, #a855f7, #ec4899, #22d3ee)",
               }}
             />
           </div>
@@ -99,7 +112,9 @@ export default async function Home() {
           </p>
           <div className="mt-6 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm text-gray-300">
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-            <span>Last updated: {new Date(initialData.timestamp).toLocaleString()}</span>
+            <span>
+              Last updated: {new Date(initialData.timestamp).toLocaleString()}
+            </span>
           </div>
         </div>
 
